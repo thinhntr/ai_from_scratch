@@ -1,23 +1,30 @@
 import numpy as np
-from collections import Counter
 
 
-def check_input(X):
-    assert (isinstance(X, np.ndarray))
-    assert (len(X.shape) == 2)
+from ml.utils import check_input
 
 
 # Only use for debugging
-rg = np.random.default_rng(12)
+# rg = np.random.default_rng(12)
 
 
 class KMeans:
+    """
+    Class to create KMeans model
+
+    Attributes
+    ----------
+    k : int
+        Number of cluster
+
+    centroids: List[np.ndarray]
+        centroids' location
+
+    n_iters : int
+        Number of iterations
+    """
     @property
-    def k(self):
-        """
-        :return:
-        Number of clusters
-        """
+    def k(self) -> int:
         if self.centroids is None:
             raise RuntimeError("fit() hasn't run yet")
         return len(self.centroids)
@@ -25,12 +32,13 @@ class KMeans:
     def __init__(self, n_iters):
         self.centroids = None
         self.n_iters = n_iters
+        self.rg__ = np.random.default_rng()
 
     def fit(self, X, k):
         check_input(X)
         assert (isinstance(k, int))
 
-        self.centroids = rg.choice(X, k, replace=False).tolist()
+        self.centroids = self.rg__.choice(X, k, replace=False).tolist()
 
         for _ in range(self.n_iters):
             y = self.predict(X)
@@ -46,10 +54,10 @@ class KMeans:
         check_input(X)
         assert (self.centroids is not None)
 
-        n_examples = X.shape[0]
+        n_samples = X.shape[0]
         n_features = X.shape[1]
 
-        padding = np.ones((n_examples, 1))
+        padding = np.ones((n_samples, 1))
         new_X = np.hstack([X, padding]).T
 
         base = np.tile(np.identity(n_features), (self.k, 1))
@@ -61,10 +69,9 @@ class KMeans:
 
         # each example lie in 1 column
         # each row i represents the distance from example in column j to cluster i
-        distances_per_example = distances.reshape(n_features, n_examples)
+        distances_per_example = distances.reshape(n_features, n_samples)
 
         # find closest cluster for each example
         y = np.argmin(distances_per_example, axis=0)
-
 
         return y
