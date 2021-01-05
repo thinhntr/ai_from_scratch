@@ -1,11 +1,13 @@
+from typing import Optional
+
 from numpy import ndarray
 
 from .exceptions import NotFittedError
 
-__all__ = ['check_input']
+__all__ = ["check_input"]
 
 
-def check_input(X, estimator_n_features=None):
+def check_input(X, estimator_n_features: Optional[int] = None):
     """
     Check if the user's input `X` is valid
 
@@ -14,13 +16,16 @@ def check_input(X, estimator_n_features=None):
     X : Any
         User's input
 
+    estimator_n_features
+        Number of features of current estimator
+
     Raises
     ------
     TypeError
         If user's input is not an instance of numpy.ndarray
 
-    ValueEror
-        If shape of X is not (n_samples, n_features) or 
+    ValueError
+        If shape of X is not (n_samples, n_features) or
         If X dimension doesn't match estimator's n_features
     """
     if not isinstance(X, ndarray):
@@ -42,14 +47,14 @@ def check_is_fitted(estimator, attributes=None):
     estimator : estimator instance
 
     attributes : str, List[str], Tuple[str], default = None
-        attributes that estimator must have after running fit() method
+        attributes that the current estimator must have after running fit() method
 
     Raises
     ------
     NotFittedError
         if this instance hasn't run fit() method yet
     """
-    if not hasattr(estimator, 'fit'):
+    if not hasattr(estimator, "fit"):
         raise TypeError("This instance is not an estimator")
 
     if attributes is not None:
@@ -57,8 +62,9 @@ def check_is_fitted(estimator, attributes=None):
             attributes = [attributes]
         attrs = all([hasattr(estimator, attr) for attr in attributes])
     else:
-        attrs = [v for v in vars(estimator)
-                 if v.endswith("_") and not v.startswith("__")]
+        attrs = [
+            v for v in vars(estimator) if v.endswith("_") and not v.startswith("__")
+        ]
 
     if not attrs:
         raise NotFittedError("This instance is not fitted")

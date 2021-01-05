@@ -1,7 +1,9 @@
+from typing import List
+
 import numpy as np
 
 
-from ml.utils import check_input
+from ml.utils import check_input, check_is_fitted
 
 
 # Only use for debugging
@@ -25,12 +27,10 @@ class KMeans:
     """
     @property
     def k(self) -> int:
-        if self.centroids is None:
-            raise RuntimeError("fit() hasn't run yet")
         return len(self.centroids)
 
-    def __init__(self, n_iters):
-        self.centroids = None
+    def __init__(self, n_iters: int):
+        self.centroids: List[List[float]] = []
         self.n_iters = n_iters
         self.rg__ = np.random.default_rng()
 
@@ -52,10 +52,9 @@ class KMeans:
 
     def predict(self, X):
         check_input(X)
-        assert (self.centroids is not None)
+        check_is_fitted(self)
 
-        n_samples = X.shape[0]
-        n_features = X.shape[1]
+        n_samples, n_features = X.shape
 
         padding = np.ones((n_samples, 1))
         new_X = np.hstack([X, padding]).T
@@ -64,14 +63,19 @@ class KMeans:
         T = np.hstack([base, -np.array(self.centroids).ravel().reshape(-1, 1)])
 
         tmp = T @ new_X
-        tmp = np.hstack(np.split(tmp, n_features))
+        # (n * k) * m
+
+        tmp = np.hstack(np.split(tmp, self.k))
         distances = np.linalg.norm(tmp, axis=0)
+        distances = np.split(distances, self.k)
+        distances = np.hstack(distances)    
 
         # each example lie in 1 column
         # each row i represents the distance from example in column j to cluster i
-        distances_per_example = distances.reshape(n_features, n_samples)
+        # distances_per_example = distances.reshape(n_features, n_samples)
 
         # find closest cluster for each example
-        y = np.argmin(distances_per_example, axis=0)
+        y = np.argmin(distances, axis=0)
 
         return y
+
