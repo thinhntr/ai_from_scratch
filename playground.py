@@ -1,32 +1,27 @@
 import numpy as np
+from sklearn.datasets import make_blobs
 
-k = 2
-centroids = [[1, 1], [4, 4]]
+from ml.cluster import KMeans
 
-
-def predict(X: np.ndarray) -> np.ndarray:
-
-    n_samples, n_features = X.shape
-
-    padding = np.ones((n_samples, 1))
-    new_X = np.hstack([X, padding]).T
-
-    base = np.tile(np.identity(n_features), (k, 1))
-    T = np.hstack([base, -np.array(centroids).ravel().reshape(-1, 1)])
-
-    tmp = T @ new_X
-    tmp = np.hstack(np.split(tmp, n_features))
-    distances = np.linalg.norm(tmp, axis=0)
-
-    # each example lie in 1 column
-    # each row i represents the distance from example in column j to cluster i
-    distances_per_example = distances.reshape(n_features, n_samples)
-
-    # find closest cluster for each example
-    y = np.argmin(distances_per_example, axis=0)
-
-    return y
+#
+# def test_predict1():
+#     model = KMeans()
+#     n_samples = 9
+#     n_clusters = 3
+#     X, _, centers = make_blobs(n_samples=n_samples,
+#                                centers=n_clusters,
+#                                random_state=29,
+#                                return_centers=True)
+#     distances = np.zeros((n_samples, n_clusters))
+#     for i, x in enumerate(X):
+#         for j, center in enumerate(centers):
+#             distances[i][j] = np.linalg.norm(x - center)
+#     y = np.argmin(distances, axis=1)
+#
+#     model.centroids = centers
+#     my_predict = model.predict(X)
+#     print(my_predict == y)
 
 
-X = np.array([[0.9, 0.8], [3.8, 4.1]])
-print(predict(X))
+if __name__ == "__main__":
+    test_predict1()
