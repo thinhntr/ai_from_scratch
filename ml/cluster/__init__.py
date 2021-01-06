@@ -1,3 +1,3 @@
-__all__ = ['kmeans']
+__all__ = ['KMeans']
 
 from .kmeans import KMeans
