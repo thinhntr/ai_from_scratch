@@ -4,7 +4,7 @@ from numpy import ndarray
 
 from .exceptions import NotFittedError
 
-__all__ = ["check_input"]
+__all__ = ["check_input", "check_is_fitted"]
 
 
 def check_input(X, estimator_n_features: Optional[int] = None):
