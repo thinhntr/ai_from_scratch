@@ -2,7 +2,6 @@ from typing import List
 
 import numpy as np
 
-
 from ml.utils import check_input, check_is_fitted
 
 
@@ -25,28 +24,24 @@ class KMeans:
     n_iters : int
         Number of iterations
     """
-    @property
-    def k(self) -> int:
-        return len(self.centroids)
 
-    def __init__(self, n_iters: int):
-        self.centroids: List[List[float]] = []
+    def __init__(self, k: int, n_iters: int = 100):
         self.n_iters = n_iters
+        self.k = k
         self.rg__ = np.random.default_rng()
 
-    def fit(self, X, k):
+    def fit(self, X):
         check_input(X)
-        assert (isinstance(k, int))
 
-        self.centroids = self.rg__.choice(X, k, replace=False).tolist()
+        self.centroids: List[List[float]] = self.rg__.choice(X, self.k, replace=False).tolist()
 
         for _ in range(self.n_iters):
             y = self.predict(X)
-
             for label in range(len(self.centroids)):
                 points_in_cluster = X[y == label, :]
                 if points_in_cluster.any():
                     self.centroids[label] = points_in_cluster.mean(axis=0)
+
         self.centroids = np.array(self.centroids)
         return self
 
@@ -56,26 +51,20 @@ class KMeans:
 
         n_samples, n_features = X.shape
 
-        padding = np.ones((n_samples, 1))
-        new_X = np.hstack([X, padding]).T
+        row_ones = np.ones((1, n_samples))
+        new_X = np.vstack([X.T, row_ones])  # (n_features+1, n_samples)
 
-        base = np.tile(np.identity(n_features), (self.k, 1))
-        T = np.hstack([base, -np.array(self.centroids).ravel().reshape(-1, 1)])
+        k_identities = np.tile(np.identity(n_features), (self.k, 1))
+        raveled = -np.array(self.centroids).ravel().reshape(-1, 1)  # convert centroids to 1-D
+        T = np.hstack([k_identities, raveled])  # (n_features*k, n_features+1)
 
-        tmp = T @ new_X
-        # (n * k) * m
+        tmp = T @ new_X  # (n_features*k, n_samples)
 
-        tmp = np.hstack(np.split(tmp, self.k))
-        distances = np.linalg.norm(tmp, axis=0)
-        distances = np.split(distances, self.k)
-        distances = np.hstack(distances)    
+        tmp = np.hstack(np.split(tmp, self.k))  # (n_features, n_samples*k)
+        distances = np.linalg.norm(tmp, axis=0)  # (1, n_samples*k)
+        distances = distances.reshape(self.k, n_samples)
 
         # each example lie in 1 column
         # each row i represents the distance from example in column j to cluster i
-        # distances_per_example = distances.reshape(n_features, n_samples)
-
         # find closest cluster for each example
-        y = np.argmin(distances, axis=0)
-
-        return y
-
+        return np.argmin(distances, axis=0)
