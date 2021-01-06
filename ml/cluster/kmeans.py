@@ -33,16 +33,28 @@ class KMeans:
     def fit(self, X):
         check_input(X)
 
-        self.centroids: List[List[float]] = self.rg__.choice(X, self.k, replace=False).tolist()
+        # self.centroids size is (k, n_samples)
+        self.centroids: np.ndarray = self.rg__.choice(self.rg__.permutation(X),
+                                                      self.k,
+                                                      replace=False)
 
-        for _ in range(self.n_iters):
+        self.first_centroids = np.copy(self.centroids)  # Use for debug purpose
+        prev_centroids = np.copy(self.centroids)  # Store centroids of the previous loop
+        loop_count = 0
+        cost = np.inf
+
+        while loop_count < self.n_iters and cost > 0.00001:
+            loop_count += 1
             y = self.predict(X)
-            for label in range(len(self.centroids)):
-                points_in_cluster = X[y == label, :]
-                if points_in_cluster.any():
-                    self.centroids[label] = points_in_cluster.mean(axis=0)
 
-        self.centroids = np.array(self.centroids)
+            for i in range(self.k):
+                points_in_cluster = X[y == i, :]
+                if points_in_cluster.any():
+                    self.centroids[i] = points_in_cluster.mean(axis=0)
+
+            costs = np.linalg.norm(self.centroids - prev_centroids, axis=1)
+            cost = costs.sum()
+            prev_centroids = np.copy(self.centroids)
         return self
 
     def predict(self, X):
