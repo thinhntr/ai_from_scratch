@@ -1,5 +1,5 @@
 # linear_regression.py
-
+from typing import Tuple
 
 import numpy as np
 
@@ -54,7 +54,21 @@ class LinearRegression:
         y_hat = self.predict(X)  # Our predict result
         return (1 / (2 * n_samples)) * ((y_hat - y) ** 2).sum()
 
-    def derivative_cost__(self, X, y):
+    def derivative_cost__(self, X, y) -> Tuple[np.ndarray, float]:
+        """Calculate derivative for cost function
+
+        Parameters
+        ----------
+        X : np.ndarray of shape (n_samples, n_features)
+            input
+        y : np.ndarray of shape (n_samples, )
+            expected output
+
+        Returns
+        -------
+        Tuple[np.ndarray, float]
+            Derivative with respect to theta0,... thetaN, derivative for bias
+        """
         n_samples = X.shape[0]
         y_hat = self.predict(X)
         diff = y_hat - y
