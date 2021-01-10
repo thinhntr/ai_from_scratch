@@ -73,14 +73,18 @@ class LinearRegression:
         loop_count = 0
         prev_J = 0
         J = np.inf
+        j_vals = []
 
-        while np.abs(J - prev_J) > 0.0001 and loop_count < 100:
+        while np.abs(J - prev_J) > 0.00001 and loop_count < 200:
             loop_count += 1
             prev_J = J
             derivative_w, derivative_b = self.derivative_cost__(X, y)
             self.W = self.W - self.alpha * derivative_w
             self.b = self.b - self.alpha * derivative_b
             J = self.cost__(X, y)
+            j_vals.append(J)
+
+        return j_vals, loop_count
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         """
