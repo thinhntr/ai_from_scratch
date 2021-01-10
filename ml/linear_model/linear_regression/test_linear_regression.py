@@ -23,20 +23,3 @@ class TestLinearRegression:
         a.b = expected_b
 
         assert (a.predict(X) == expected_y).all()
-
-    def test_fit1(self):
-        X = np.array([[0, 0],
-                      [1, 1]])
-        y = np.array([1, 4])
-
-        expected_W = np.array([1, 1])
-        expected_b = 2
-
-        model = LinearRegression()
-        model.fit(X, y)
-        y_hat = model.predict(X)
-
-        assert (y_hat == y).all()
-        assert (model.W == expected_W).all()
-        assert (model.b == expected_b).all()
-
