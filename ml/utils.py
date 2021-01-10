@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional, Tuple, Union
 
 from numpy import ndarray
 
@@ -38,7 +38,7 @@ def check_input(X, estimator_n_features: Optional[int] = None):
         raise ValueError("X's dimension doesn't match estimator n_features")
 
 
-def check_is_fitted(estimator, attributes=None):
+def check_is_fitted(estimator, attributes: Union[str, List[str], Tuple[str]] = None):
     """
     Check if the current estimator has run fit() method
 
@@ -46,7 +46,7 @@ def check_is_fitted(estimator, attributes=None):
     ----------
     estimator : estimator instance
 
-    attributes : str, List[str], Tuple[str], default = None
+    attributes
         attributes that the current estimator must have after running fit() method
 
     Raises
