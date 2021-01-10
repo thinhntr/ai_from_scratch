@@ -27,7 +27,7 @@ class LinearRegression:
         """Number of dimensions of vectors that this estimator can predict"""
         return self.W.shape[0]
 
-    def __init__(self, alpha: float = 0.01):
+    def __init__(self, alpha: float = 0.1):
         self.alpha = alpha
         self.W = None
         self.b = None
