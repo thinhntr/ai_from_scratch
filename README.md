@@ -9,6 +9,7 @@ AI algorithms' implementations
 
 ## Linear model
 - [Linear Regression](https://github.com/thinhntr/ai_from_scratch/tree/main/ml/linear_model/linear_regression)
+- [Logistic Regression](https://github.com/thinhntr/ai_from_scratch/tree/main/ml/linear_model/logistic_regression)
 
 ## Cluster
 - [K Means](https://github.com/thinhntr/ai_from_scratch/tree/main/ml/cluster/kmeans/)
