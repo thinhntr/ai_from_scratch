@@ -13,3 +13,6 @@ AI algorithms' implementations
 
 ## Cluster
 - [K Means](https://github.com/thinhntr/ai_from_scratch/tree/main/ml/cluster/kmeans/)
+
+## Neighbors
+- [KNN](https://github.com/thinhntr/ai_from_scratch/tree/main/ml/neighbors/knn/)
