@@ -18,9 +18,6 @@ class KMeans:
     k : int
         Number of cluster
 
-    centroids: List[np.ndarray]
-        centroids' location
-
     n_iters : int
         Number of iterations
     """
@@ -61,22 +58,16 @@ class KMeans:
         check_input(X)
         check_is_fitted(self)
 
-        n_samples, n_features = X.shape
+        X_nrows, X_ncols = X.shape[:2]
 
-        row_ones = np.ones((1, n_samples))
-        new_X = np.vstack([X.T, row_ones])  # (n_features+1, n_samples)
+        X_tile = np.tile(X, self.k)
+        centroids_tile = np.tile(self.centroids.ravel(), (X_nrows, 1))
 
-        k_identities = np.tile(np.identity(n_features), (self.k, 1))
-        raveled = -np.array(self.centroids).ravel().reshape(-1, 1)  # convert centroids to 1-D
-        T = np.hstack([k_identities, raveled])  # (n_features*k, n_features+1)
+        diff = X_tile - centroids_tile
+        diff_reshape = diff.reshape(X_nrows * self.k, X_ncols)
 
-        tmp = T @ new_X  # (n_features*k, n_samples)
+        distances = np.linalg.norm(diff_reshape, axis=1)
+        # Value at row i and column j is the distance between X[i] and self.fit_X[j]
+        distances = distances.reshape(X_nrows, self.k)
 
-        tmp = np.hstack(np.split(tmp, self.k))  # (n_features, n_samples*k)
-        distances = np.linalg.norm(tmp, axis=0)  # (1, n_samples*k)
-        distances = distances.reshape(self.k, n_samples)
-
-        # each example lie in 1 column
-        # each row i represents the distance from example in column j to cluster i
-        # find closest cluster for each example
-        return np.argmin(distances, axis=0)
+        return np.argmin(distances, axis=1)
